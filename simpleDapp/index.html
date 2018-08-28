@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>First DApp Demo</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+
+        <h1> First DApp Demo</h1>
+
+        <h2 id="info"></h2>
+
+        <label for="name" class="col-lg-2 control-label">姓名：</label>
+        <input id="name" type="text">
+
+        <label for="name" class="col-lg-2 control-label">年龄：</label>
+        <input id="age" type="text">
+
+        <button id="button">更新</button>
+
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <script>
+
+        console.log(web3);
+
+       if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
+        } else {
+            // set the provider you want from Web3.providers
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+        }
+
+        web3.eth.defaultAccount = web3.eth.accounts[0];
+
+        var infoContract = web3.eth.contract([{"constant":true,"inputs":[],"name":"getInfo","outputs":[{"name":"","type":"string"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_fName","type":"string"},{"name":"_age","type":"uint256"}],"name":"setInfo","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]);
+
+        var info = infoContract.at('0x698f784668cab1338a7f03dbfda5596ec65e9ca3');
+
+        info.getInfo(function(error, result){
+            if(!error)
+                {
+                    $("#info").html(result[0]+' ('+result[1]+' years old)');
+                    console.log(result);
+                }
+            else
+                console.error(error);
+        });
+
+        $("#button").click(function() {
+            info.setInfo($("#name").val(), $("#age").val(), function(error, result){
+             });
+
+        });
+
+    </script>
+
+</body>
+</html>

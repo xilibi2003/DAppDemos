@@ -1,0 +1,41 @@
+<html>
+  <head>
+        <meta charset="UTF-8">
+    <title> First DApp Demo</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+  </head>
+
+  <body>
+      <div class="container">
+        <h1>Web3.js 0.20  Demo  DApp Demo</h1>
+
+        <h2 id="info"> </h2>
+
+      </div>
+
+
+    <script src="jquery.js"></script>
+    <script>
+      if (typeof web3 !== 'undefined') {
+        web3 = new Web3(web3.currentProvider);
+      } else {
+        // set the provider you want from Web3.providers
+        web3 = new Web3(new Web3.providers.HttpProvider("HTTP://127.0.0.1:9545"));
+        console.log("web3 local provider:" + web3);
+      }
+
+var accounts = web3.eth.accounts;
+console.log("accounts[0]:" + accounts[0]);
+
+web3.eth.getAccounts(function callback1(error, result){
+    web3.eth.getBalance(result[0], function callback2(err2, value) {
+        $("#info").html("" + value);
+    });
+ });
+
+    </script>
+
+  </body>
+
+</html>
