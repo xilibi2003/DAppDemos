@@ -1,0 +1,56 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title> Check ENV Demo</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script src="web3.min.js"></script>
+  </head>
+
+  <body>
+        <div class="container">
+          <h1>Check ENV Demo</h1>
+          <h2 id="env"> </h2>
+          <h2 id="net"> </h2>
+        </div>
+        
+        <script src="jquery.js"></script>
+        <script>
+            window.addEventListener('load', function() {
+                if (typeof web3 !== 'undefined') {
+                    web3 = new Web3(web3.currentProvider);
+                    if (web3.currentProvider.isMetaMask == true) {
+                        $("#env").html("MetaMask可用");
+                    } else {
+                        $("#env").html("非MetaMask环境");
+                    }
+                } else {
+                    $("#env").html("No web3? 需要安装<a href='https://metamask.io/'>MetaMask</a>!");
+                }
+            });
+
+            web3.version.getNetwork((err, netId) => {
+            switch (netId) {
+                case "1":
+                    $("#net").html('This is mainnet')
+                break
+                case "2":
+                    $("#net").html('This is the deprecated Morden test network.')
+                break
+                case "3":
+                    $("#net").html('This is the ropsten test network.')
+                break
+                case "4":
+                    $("#net").html('This is the Rinkeby test network.')
+                break
+                case "42":
+                    $("#net").html('This is the Kovan test network.')
+                break
+                default:
+                    $("#net").html('This is an unknown network.')
+            }
+            })
+
+        </script>
+  </body>
+</html>

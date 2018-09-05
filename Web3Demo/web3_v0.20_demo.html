@@ -1,0 +1,1160 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Using web3 API with MetaMask</title>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+<!-- for ecrecover -->
+<script type="text/javascript" src="ethereumjs-util.js"></script>
+<script>
+
+
+window.addEventListener('load', function() {
+
+  // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+  if (typeof web3 !== 'undefined') {
+    // Use Mist/MetaMask's provider
+    window.web3 = new Web3(web3.currentProvider);
+  } else {
+    console.log('No web3? You should consider trying MetaMask!')
+    // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+	window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    //window.web3 = new Web3(new Web3.providers.HttpProvider("https://proxy.mobilefish.com:9070"));
+  }
+
+  // Now you can start your app & access web3 freely:
+  startApp();
+})
+
+// =================================================
+
+function startApp(){
+  showNetwork();
+  showAPIVersion();
+  showVersionNode();
+  showEthereumProtocolVersion();
+  showWhisperProtocolVersion();
+  showAConnectionToNode();  // returns null
+  showListeningNetworkConnection();
+  showPeerCount();
+  showCoinbase();
+  showDefaultBlock();
+  showSyncing();
+  showMining();
+  showHashRate();
+  showGasPrice();
+  showAccounts();
+  showCurrentBlockNumber();
+  showGetBalance();
+}
+
+// =================================================
+
+function showNetwork() {
+  web3.version.getNetwork((err, netId) => {
+    var output = "";
+
+    if (!err) {
+      switch (netId) {
+        case "1":
+          output = "mainnet";
+          break
+        case "2":
+          output = "morden";
+          break
+        case "3":
+          output = "ropsten";
+          break
+        case "4":
+          output = "rinkeby";
+          break
+        default:
+          output = "unknown network = "+res;
+
+      }
+    } else {
+      output = "Error";
+    }
+    document.getElementById('network').innerHTML = "[web3.version.getNetwork] Network = " + output + "<br />";
+  })
+}
+
+// =================================================
+
+function showAPIVersion() {
+  // No async method available
+  document.getElementById('api').innerHTML = "[web3.version.api] The ethereum js api version = " + web3.version.api + "<br />";
+}
+
+// =================================================
+
+function showVersionNode() {
+  web3.version.getNode((err, res) => {
+    var output = "";
+
+    if (!err) {
+      output = res;
+    } else {
+      output = "Error";
+    }
+    document.getElementById('node').innerHTML = "[web3.version.getNode] The client/node version = " + output + "<br />";
+  })
+}
+
+// =================================================
+
+function showEthereumProtocolVersion() {
+  web3.version.getEthereum((err, res) => {
+    var output = "";
+
+    if (!err) {
+      output = res;
+    } else {
+      output = "Error";
+    }
+    document.getElementById('ethereum').innerHTML = "[web3.version.getEthereum] The ethereum protocol version = " + output + "<br />";
+  })
+}
+
+// =================================================
+
+function showWhisperProtocolVersion() {
+  web3.version.getWhisper((err, res) => {
+    var output = "";
+
+    if (!err) {
+      output = res;
+    } else {
+      output = "Error";
+    }
+    document.getElementById('whisper').innerHTML = "[web3.version.getWhisper] The whisper protocol version = " + output + "<br />";
+  })
+}
+
+// =================================================
+
+function showAConnectionToNode() {
+  var output = "";
+  if(web3.isConnected()) {
+    output = "Yes";
+  } else {
+     output = "No";
+  }
+  document.getElementById('connection').innerHTML = "[web3.isConnected] Connection to a node exists = " + output + "<br />";
+}
+
+// =================================================
+
+function showListeningNetworkConnection() {
+  web3.net.getListening((err, res) => {
+    var output = "";
+
+    if (!err) {
+      if(res) {
+        output = "Yes";
+      } else {
+        output = "No";
+      }
+    } else {
+      output = "Error";
+    }
+    document.getElementById('listening').innerHTML = "[web3.net.getListening] Client is actively listening for network connections = " + output + "<br />";
+  })
+}
+
+// =================================================
+
+function showPeerCount() {
+  web3.net.getPeerCount((err, res) => {
+    var output = "";
+
+    if (!err) {
+      output = res;
+    } else {
+      output = "Error";
+    }
+    document.getElementById('peer').innerHTML = "[web3.net.getPeerCount] The number of peers currently connected to the client = " + output + "<br />";
+  })
+}
+
+// =================================================
+
+function showCoinbase() {
+  web3.eth.getCoinbase((err, res) => {
+    var output = "";
+
+    if (!err) {
+      output = res;
+    } else {
+      output = "Error";
+    }
+    document.getElementById('coinbase').innerHTML = "[web3.eth.getCoinbase] Coinbase = " + output + "<br />";
+  })
+}
+
+// =================================================
+
+function showDefaultBlock() {
+  // No async method available
+  document.getElementById('defaultBlock').innerHTML = "[web3.eth.defaultBlock] The default block = " + web3.eth.defaultBlock + "<br />";
+}
+
+// =================================================
+
+function showSyncing() {
+  web3.eth.getSyncing((err, res) => {
+    var output = "";
+
+    if (!err) {
+      if(res) {
+        output = res;
+      } else {
+        output = "No";
+      }
+    } else {
+      output = "Error";
+    }
+    document.getElementById('syncing').innerHTML = "[web3.eth.getSyncing] When the node is currently syncing return syncing object, if not return false = " + output + "<br />";
+  })
+}
+
+// =================================================
+
+function showMining() {
+  web3.eth.getMining((err, res) => {
+    var output = "";
+
+    if (!err) {
+      if(res) {
+        output = "Yes";
+      } else {
+        output = "No";
+      }
+    } else {
+      output = "Error";
+    }
+    document.getElementById('mining').innerHTML = "[web3.eth.getMining] Is the node mining = " + output + "<br />";
+  })
+}
+
+// =================================================
+
+function showHashRate() {
+  web3.eth.getHashrate((err, res) => {
+    var output = "";
+
+    if (!err) {
+      output = res;
+    } else {
+      output = "Error";
+    }
+    document.getElementById('hashrate').innerHTML = "[web3.eth.getHashrate] Hash rate (hashes per second that the node is mining with) = " + output + "<br />";
+  })
+}
+
+// =================================================
+
+function showGasPrice() {
+  web3.eth.getGasPrice((err, res) => {
+    var output = "";
+
+    if (!err) {
+      output = res;
+    } else {
+      output = "Error";
+    }
+    document.getElementById('gasprice').innerHTML = "[web3.eth.getGasPrice] The current gas price = " + output + "<br />";
+  })
+}
+
+// =================================================
+
+function showAccounts() {
+  web3.eth.getAccounts((err, res) => {
+    var output = "";
+
+    if (!err) {
+      output = res.join("<br />");
+    } else {
+      output = "Error";
+    }
+    document.getElementById('accounts').innerHTML = "[web3.eth.getAccounts] Accounts = <br />" + output + "<br />";
+  })
+}
+
+// =================================================
+
+function showCurrentBlockNumber() {
+  web3.eth.getBlockNumber((err, res) => {
+    var output = "";
+
+    if (!err) {
+      output = res;
+    } else {
+      output = "Error";
+    }
+    document.getElementById('blocknumber').innerHTML = "[web3.eth.getBlockNumber] Current block number = " + output + "<br />";
+  })
+}
+
+// =================================================
+
+function showGetBalance() {
+  web3.eth.getAccounts((err, res) => {
+    var output = "";
+    if (!err) {
+
+      for (i=0; i< res.length; i++){
+        var account = res[i];
+
+        web3.eth.getBalance(account, (err2, res2) => {
+          if (!err2) {
+            // web3.eth.getBalance(res[i]) returns an instanceof BigNumber
+            output += "Account= "+ account +", balance= " + res2 + " (wei), "+ web3.fromWei(res2, 'ether') +" (ether)<br />";
+
+          } else {
+            output = "Error2";
+          }
+          document.getElementById('balance').innerHTML = "[web3.eth.getBalance] Balance of all accounts [ref 2] = <br />" + output + "<br />";
+        })
+      }
+
+    } else {
+      output = "Error1";
+    }
+    document.getElementById('balance').innerHTML = "[web3.eth.getBalance] Balance of all accounts [ref 1] = <br />" + output + "<br />";
+  })
+}
+
+// =================================================
+
+function showCodeAtAdddress() {
+  var addressHexString = document.getElementById('addressCode').value;
+
+  if (addressHexString != null && addressHexString.length > 0) {
+    web3.eth.getCode(addressHexString, (err, res) => {
+      var output = "";
+      if (!err) {
+        output = res;
+      } else {
+        output = "Error";
+      }
+      document.getElementById('code').innerHTML = "Code = <br />" + output + "<br />";
+    })
+  }
+}
+
+// =================================================
+
+function showBlockInfo() {
+  var blockHashOrNumber = document.getElementById('blockHashOrNumber').value;
+
+  if (blockHashOrNumber != null && blockHashOrNumber.length > 0) {
+    web3.eth.getBlock(blockHashOrNumber, (err, res) => {
+      var output = "";
+      if (!err) {
+        output += parseResultObject(res);
+      } else {
+        output = "Error";
+      }
+      document.getElementById('blockinfo').innerHTML = "Block Info = <br />" + output + "<br />";
+    })
+  }
+}
+
+// =================================================
+
+function showNumberOfTransactionsInBlock() {
+  var blockHashOrNumber = document.getElementById('blockHashOrNumber2').value;
+
+  if (blockHashOrNumber != null && blockHashOrNumber.length > 0) {
+    web3.eth.getBlockTransactionCount(blockHashOrNumber, (err, res) => {
+      var output = "";
+      if (!err) {
+        output = res;
+      } else {
+        output = "Error";
+      }
+      document.getElementById('numberOfTransactions').innerHTML = "Number of transactions = " + output + "<br />";
+    })
+  }
+}
+
+// =================================================
+
+function showBlocksUncle() {
+  var blockHashOrNumber = document.getElementById('blockHashOrNumber3').value;
+  var uncleIndex = document.getElementById('uncleIndex').value;
+
+  if (blockHashOrNumber != null && blockHashOrNumber.length > 0 &&
+    uncleIndex != null && uncleIndex.length > 0
+  ) {
+    web3.eth.getUncle(blockHashOrNumber, uncleIndex, (err, res) => {
+      var output = "";
+      if (!err) {
+        output += parseResultObject(res);
+      } else {
+        output = "Error";
+      }
+      document.getElementById('blocksUncle').innerHTML = "Blocks uncle= " + output + "<br />";
+    })
+  }
+}
+
+// =================================================
+
+function showTransactions() {
+  var transactionHash = document.getElementById('transactionHash').value;
+
+  if (transactionHash != null && transactionHash.length > 0) {
+    web3.eth.getTransaction(transactionHash, (err, res) => {
+      var output = "";
+      if (!err) {
+        output += parseResultObject(res);
+      } else {
+        output = "Error";
+      }
+      document.getElementById('transactions').innerHTML = "Transactions= <br />" + output + "<br />";
+    })
+  }
+}
+
+// =================================================
+
+function showTransactionFromBlock() {
+  var blockHashOrNumber = document.getElementById('blockHashOrNumber4').value;
+  var transactionIndex = document.getElementById('transactionIndex').value;
+
+  if (blockHashOrNumber != null && blockHashOrNumber.length > 0 &&
+    transactionIndex != null && transactionIndex.length > 0
+  ) {
+    web3.eth.getTransactionFromBlock(blockHashOrNumber, transactionIndex, (err, res) => {
+      var output = "";
+      if (!err) {
+        output += parseResultObject(res);
+      } else {
+        output = "Error";
+      }
+      document.getElementById('transactionsFromBlock').innerHTML = "Transactions= <br />" + output + "<br />";
+    })
+  }
+}
+
+// =================================================
+
+function showTransactionReceipt() {
+  var transactionHash = document.getElementById('transactionHash2').value;
+
+  if (transactionHash != null && transactionHash.length > 0) {
+    web3.eth.getTransactionReceipt(transactionHash, (err, res) => {
+      var output = "";
+      if (!err) {
+        output += parseResultObject(res);
+      } else {
+        output = "Error";
+      }
+      document.getElementById('transactionReceipt').innerHTML = "Transaction receipt= <br />" + output + "<br />";
+    })
+  }
+}
+
+// =================================================
+
+function showTransactionsFromAdddress() {
+  var address = document.getElementById('address').value;
+
+  if (address != null && address.length > 0) {
+    web3.eth.getTransactionCount(address, (err, res) => {
+      var output = "";
+      if (!err) {
+        output += res;
+      } else {
+        output = "Error";
+      }
+      document.getElementById('transactions2').innerHTML = "Transaction count= " + output + "<br />";
+    })
+  }
+}
+
+// =================================================
+
+function sendTransaction() {
+  var fromAccount = document.getElementById('fromAccount').value;
+  var toAccount = document.getElementById('toAccount').value;
+  var amount = document.getElementById('amount').value;
+
+  // Use for example 2
+  var gas = "35000";
+  var gasPrice = "21000000000";
+
+// Use for example 2
+  if (fromAccount != null && fromAccount.length > 0 &&
+      toAccount != null && toAccount.length > 0 &&
+      amount != null && amount.length > 0 &&
+      gas != null && gas.length > 0 &&
+      gasPrice != null && gasPrice.length > 0
+  ) {
+    // Example 1: Using the default MetaMask gas and gasPrice
+    var message = {from: fromAccount, to:toAccount, value: web3.toWei(amount, 'ether')};
+
+    // Example 2: Setting gas and gasPrice
+    //var message = {from: fromAccount, to:toAccount, value: web3.toWei(amount, 'ether'), gas: gas, gasPrice: gasPrice};
+
+    // Example 3: Using the default account
+    //web3.eth.defaultAccount = fromAccount;
+    //var message = {to:toAccount, value: web3.toWei(amount, 'ether')};
+
+    web3.eth.sendTransaction(message, (err, res) => {
+      var output = "";
+      if (!err) {
+        output += res;
+      } else {
+        output = "Error";
+      }
+      document.getElementById('transactionResponse').innerHTML = "Transaction response= " + output + "<br />";
+    })
+  }
+}
+
+// =================================================
+
+function sendContractTransaction() {
+  var fromAccount = document.getElementById('fromAccount2').value;
+  var byteCode = document.getElementById('byteCode').value;
+
+  if (fromAccount != null && fromAccount.length > 0 &&
+      byteCode != null && byteCode.length > 0
+  ) {
+    //var data = {from: fromAccount, to:toAccount, value: web3.toWei(amount, 'ether'), gasLimit: gasLimit, gasPrice: gasPrice};
+    var message = {from: fromAccount, data:byteCode.trim()};
+
+    web3.eth.sendTransaction(message, (err, res) => {
+      var output = "";
+      if (!err) {
+        output += res;
+      } else {
+        output = "Error";
+      }
+      document.getElementById('transactionResponse2').innerHTML = "Contract transaction response= " + output + "<br />";
+    })
+  }
+}
+
+// =================================================
+
+function signData() {
+  var fromAccount = document.getElementById('fromAccount3').value;
+  var dataToSign = document.getElementById('dataToSign').value;
+
+  if (fromAccount != null && fromAccount.length > 0 &&
+      dataToSign != null && dataToSign.length > 0
+  ) {
+    var encryptedMessage = web3.sha3(dataToSign);
+
+    web3.eth.sign(fromAccount, encryptedMessage, (err, res) => {
+      var output = "";
+      var rValue = "";
+      var sValue = "";
+      var vValue = "";
+
+      if (!err) {
+        output += res;
+        var r = res.slice(0, 66);
+        var s = '0x' + res.slice(66, 130);
+        var v = '0x' + res.slice(130, 132)
+        v = web3.toDecimal(v)
+
+        // Using ethereumjs-util.js
+        var msg = EthJS.Util.toBuffer(encryptedMessage);
+        var pub = EthJS.Util.ecrecover(msg, v, r, s);
+        var addrBuf = EthJS.Util.pubToAddress(pub);
+        var addr    = EthJS.Util.bufferToHex(addrBuf);
+
+      } else {
+        output = "Error";
+      }
+      document.getElementById('signResponse').innerHTML = "<br /> sig= " + output + "<br /><br />";
+      document.getElementById('rValue').innerHTML = "r = sig.slice(0, 66) = " + r + "<br />";
+      document.getElementById('sValue').innerHTML = "s = '0x' + sig.slice(66, 130) = " + s + "<br />";
+      document.getElementById('vValue').innerHTML = "v = '0x' + sig.slice(130, 132) <br />v = web3.toDecimal(v) = " + v + "<br />";
+      document.getElementById('pubKey').innerHTML = "pubKey = ecrecover(msg, v, r, s) = " + addr + "<br />";
+    })
+  }
+}
+
+function sha3() {
+  var dataToHash = document.getElementById('dataToHash').value;
+  var encoding = document.getElementById('sha3Encoding').value;
+
+  var output="";
+  if (dataToHash != null && dataToHash.length > 0) {
+    if(encoding == "hex") {
+      output = web3.sha3(dataToHash, {encoding: 'hex'});
+    } else {
+      output = web3.sha3(dataToHash);
+    }
+
+    document.getElementById('sha3Response').innerHTML = "<br /> sha3= " + output + "<br /><br />";
+  }
+}
+
+function toHex() {
+  var dataToHex = document.getElementById('dataToHex').value;
+  var output="";
+  if (dataToHex != null && dataToHex.length > 0) {
+    output = web3.toHex(dataToHex);
+    document.getElementById('toHexResponse').innerHTML = "<br /> toHex= " + output + "<br /><br />";
+  }
+}
+
+function hexToASCII() {
+  var hexString = document.getElementById('hexString').value;
+  var output="";
+  if (hexString != null && hexString.length > 0) {
+    output = web3.toAscii(hexString);
+    document.getElementById('toASCIIResponse').innerHTML = "<br /> toASCII= " + output + "<br /><br />";
+  }
+}
+
+function fromASCII() {
+  var asciiString = document.getElementById('asciiString').value;
+  var numberOfBytes = document.getElementById('numberOfBytes').value;
+
+  var output="";
+  if (asciiString != null && asciiString.length > 0 && !isNaN(numberOfBytes)) {
+    var padding = parseInt(numberOfBytes);
+
+    if(padding > 0) {
+      output = web3.fromAscii(asciiString, padding);
+    } else {
+      output = web3.fromAscii(asciiString);
+    }
+
+    document.getElementById('fromASCIIResponse').innerHTML = "<br /> hex string= " + output + "<br /><br />";
+  }
+}
+
+function toDecimal() {
+  var hexToNumber = document.getElementById('hexToNumber').value;
+  var output="";
+  if (hexToNumber != null && hexToNumber.length > 0) {
+    output = web3.toDecimal(hexToNumber);
+    document.getElementById('toDecimalResponse').innerHTML = "<br /> decimal= " + output + "<br /><br />";
+  }
+}
+
+function fromDecimal() {
+  var numberToHex = document.getElementById('numberToHex').value;
+  var output="";
+  if (numberToHex != null && numberToHex.length > 0) {
+    output = web3.fromDecimal(numberToHex);
+    document.getElementById('fromDecimalResponse').innerHTML = "<br /> hex= " + output + "<br /><br />";
+  }
+}
+
+function fromWei() {
+  var numberOfWei = document.getElementById('numberOfWei').value;
+  var etherUnit = document.getElementById('etherUnit').value;
+
+  var output="";
+  if (numberOfWei != null && numberOfWei.length > 0 && !isNaN(numberOfWei)) {
+    output = web3.fromWei(numberOfWei,etherUnit);
+    document.getElementById('fromWeiResponse').innerHTML = "<br /> "+etherUnit+"= " + output + "<br /><br />";
+  }
+}
+
+function toWei() {
+  var numberOfEthereumUnit = document.getElementById('numberOfEthereumUnit').value;
+  var etherUnit = document.getElementById('etherUnit2').value;
+
+  var output="";
+  if (numberOfEthereumUnit != null && numberOfEthereumUnit.length > 0 && !isNaN(numberOfEthereumUnit)) {
+    output = web3.toWei(numberOfEthereumUnit,etherUnit);
+    document.getElementById('toWeiResponse').innerHTML = "<br /> wei= " + output + "<br /><br />";
+  }
+}
+
+function toBigNumber() {
+  var numberToBigNumber = document.getElementById('numberToBigNumber').value;
+  var output="";
+  if (numberToBigNumber != null && numberToBigNumber.length > 0 && !isNaN(numberToBigNumber)) {
+    output = web3.toBigNumber(numberToBigNumber);
+    document.getElementById('toBigNumberResponse').innerHTML = "<br /> A BigNumber = " + output.toString(10) + "<br /><br />";
+  }
+}
+
+function isAddress() {
+  var hexAddress = document.getElementById('hexAddress').value;
+  var output="";
+  if (hexAddress != null && hexAddress.length > 0) {
+    output = web3.isAddress(hexAddress);
+    document.getElementById('isAddressResponse').innerHTML = "<br /> Is an address = " + output + "<br /><br />";
+  }
+}
+
+function setDefaultAccount(){
+  var defaultAccount = document.getElementById('defaultAccount').value;
+  if (defaultAccount != null && web3.isAddress(defaultAccount)) {
+    web3.eth.defaultAccount = defaultAccount;
+    document.getElementById('displayDefaultAccount').innerHTML = "Default account is now: " +web3.eth.defaultAccount;
+  }
+}
+
+// =================================================
+// Helper Functions
+// =================================================
+function parseResultObject(res){
+  var output = "";
+
+  for (var key in res) {
+    if (res.hasOwnProperty(key)) {
+
+      if( Object.prototype.toString.call( res[key] ) === '[object Array]' ) {
+        var arrObj = res[key];
+
+        if(arrObj.length == 0) {
+          output += key + " -> []<br />";
+        } else {
+
+          for(var i=0; i < arrObj.length; i++){
+            for (var key2 in arrObj[i]) {
+              if (arrObj[i].hasOwnProperty(key2)) {
+                output += key + "["+i+"]." + key2 + "-> " + arrObj[i][key2] + "<br />";
+              }
+            }
+          }
+
+        }
+      } else {
+        output += key + " -> " + res[key] + "<br />";
+      }
+    }
+  }
+  return output;
+}
+</script>
+</head>
+<body>
+
+<h1>Using web3 API with MetaMask</h1>
+This web page shows examples using web3 methods together with MetaMask.
+<br /><br />
+
+Information about web3 API: <a href="https://github.com/ethereum/wiki/wiki/JavaScript-API" target="_blank">https://github.com/ethereum/wiki/wiki/JavaScript-API</a><br />
+Information about MetaMask: <a href="https://metamask.io/" target="_blank">https://metamask.io/</a><br />
+Explore Ethereum Test Network Rinkeby blockchain: <a href="https://rinkeby.etherscan.io" target="_blank">https://rinkeby.etherscan.io</a><br />
+Explore Ethereum Main Network blockchain: <a href="https://etherscan.io/" target="_blank">https://etherscan.io/</a><br />
+MetaMask only support the web3 asynchronous methods (there are a few exceptions), see: <a href="https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md" target="_blank">https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md</a><br />
+Gitter Ethereum/web3.js, see: <a href="https://gitter.im/ethereum/web3.js" target="_blank">https://gitter.im/ethereum/web3.js</a>
+
+<h2>How to use</h2>
+<ul>
+<li>Install Chrome browser: <a href="https://www.google.com/chrome/" target="_blank">https://www.google.com/chrome/</a></li>
+<li>Install the MetaMask plugin from the Chrome Web Store: <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn" target="_blank">https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn</a></li>
+<li>Setup MetaMask, see YouTube movie: <a href="https://www.youtube.com/watch?v=6Gf_kRE4MJU" target="_blank">https://www.youtube.com/watch?v=6Gf_kRE4MJU</a></li>
+<li>The examples also works if you have setup a local Ethereum node.</li>
+<li>WARNING: RUN THE EXAMPLES AGAINST A TEST NETWORK AND NOT ON THE MAIN ETHEREUM NETWORK</li>
+<li>I recommend that you use the Rinkeby Test Network.</li>
+<li>For the examples create at least two accounts in MetaMask.</li>
+<li>Request some Ether from the Rinkeby GitHub Authenticated Faucet <a href="https://faucet.rinkeby.io/" target="_blank">https://faucet.rinkeby.io/</a>
+<li>Log in MetaMask and select the correct Test Network (Recommended Rinkeby)</li>
+</ul>
+
+
+<h2>Examples</h2>
+
+<div id="network"></div>
+<div id="api"></div>
+<div id="node"></div>
+<div id="ethereum"></div>
+<div id="whisper"></div>
+<div id="connection"></div>
+<div id="listening"></div>
+<div id="peer"></div>
+<div id="coinbase"></div>
+<div id="defaultBlock"></div>
+<div id="syncing"></div>
+<div id="mining"></div>
+<div id="hashrate"></div>
+<div id="gasprice"></div>
+<div id="accounts"></div>
+<div id="blocknumber"></div>
+<div id="balance"></div>
+
+<!-- ================================================= -->
+<hr />
+
+[web3.eth.defaultAccount] This default account is used for the following methods:<br />
+- web3.eth.sendTransaction()<br />
+- web3.eth.call()<br />
+Note: The defaultAccount optionally can be overwritten by specifying the from property.
+<br />
+Default account (rinkeby example):
+<input type="text" id="defaultAccount" size="100" value="0x2b417fe5d262443918358a92868c60922285eda1">
+<button onclick="setDefaultAccount()">Set</button>
+<br /><br />
+<div id="displayDefaultAccount"></div>
+<hr />
+
+<!-- ================================================= -->
+<hr />
+
+[web3.sha3] The Keccak-256 SHA3 of the given data<br />
+Data to be hashed:<br />
+<textarea id="dataToHash" rows="10" cols="80">Some string to be hashed</textarea><br />
+Encoding:
+<select id="sha3Encoding">
+  <option value="no" selected="selected">no encoding</option>
+  <option value="hex">hex encoding</option>
+</select>
+
+<br /><br />
+<button onclick="sha3()">Hash</button>
+<br /><br />
+<div id="sha3Response"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.toHex] Converts any value into HEX<br />
+Data to be converted into hex:<br />
+<textarea id="dataToHex" rows="10" cols="80">{test: 'test'}</textarea><br />
+<button onclick="toHex()">Convert</button>
+<br /><br />
+<div id="toHexResponse"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.toAscii] Converts a HEX string into a ASCII string<br />
+Hex string:<br />
+<textarea id="hexString" rows="10" cols="80">0x657468657265756d000000000000000000000000000000000000000000000000</textarea><br />
+<button onclick="hexToASCII()">Convert</button>
+<br /><br />
+<div id="toASCIIResponse"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.fromAscii] Converts any ASCII string to a HEX string.<br />
+ASCII string:<br />
+<textarea id="asciiString" rows="10" cols="80">ethereum</textarea>
+<br /><br />
+The number of bytes the returned HEX string should have (No paddding if value = 0). This does not work!! Bug maybe?<br />
+<input type="text" id="numberOfBytes" size="20" value="0">
+<br /><br />
+<button onclick="fromASCII()">Convert</button>
+<br /><br />
+<div id="fromASCIIResponse"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.toDecimal] Converts a HEX string to its number representation.<br />
+An HEX string to be converted to a number:<br />
+<textarea id="hexToNumber" rows="10" cols="80">0x15</textarea><br />
+<button onclick="toDecimal()">Convert</button>
+<br /><br />
+<div id="toDecimalResponse"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.fromDecimal] Converts a number or number string to its HEX representation.<br />
+A number to be converted to a HEX string:<br />
+<textarea id="numberToHex" rows="10" cols="80">21</textarea><br />
+<button onclick="fromDecimal()">Convert</button>
+<br /><br />
+<div id="fromDecimalResponse"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.fromWei] Converts a number of wei into selected ethereum unit:<br />
+Wei (in dec or hex):<br />
+<textarea id="numberOfWei" rows="10" cols="80">21000000000000</textarea><br />
+Unit:
+<select id="etherUnit">
+  <option value="kwei">kwei/ada</option>
+  <option value="mwei">mwei/babbage</option>
+  <option value="gwei">gwei/shannon</option>
+  <option value="szabo">szabo</option>
+  <option value="finney">finney</option>
+  <option value="ether" selected="selected">ether</option>
+  <option value="kether">kether</option>
+  <option value="mether">mether</option>
+  <option value="gether">gether</option>
+  <option value="tether">tether</option>
+</select>
+
+<br /><br />
+<button onclick="fromWei()">Convert</button>
+<br /><br />
+<div id="fromWeiResponse"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.toWei] Converts an ethereum unit into wei:<br />
+Number of Ethereum units (in dec or hex):<br />
+<textarea id="numberOfEthereumUnit" rows="10" cols="80">1</textarea><br />
+Unit:
+<select id="etherUnit2">
+  <option value="kwei">kwei/ada</option>
+  <option value="mwei">mwei/babbage</option>
+  <option value="gwei">gwei/shannon</option>
+  <option value="szabo">szabo</option>
+  <option value="finney">finney</option>
+  <option value="ether" selected="selected">ether</option>
+  <option value="kether">kether</option>
+  <option value="mether">mether</option>
+  <option value="gether">gether</option>
+  <option value="tether">tether</option>
+</select>
+
+<br /><br />
+<button onclick="toWei()">Convert</button>
+<br /><br />
+<div id="toWeiResponse"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.toBigNumber] Converts a given number into a BigNumber instance.<br />
+A number, number string or HEX string of a number:<br />
+<textarea id="numberToBigNumber" rows="10" cols="80">200000000000000000000001</textarea><br />
+<button onclick="toBigNumber()">Convert</button>
+<br /><br />
+<div id="toBigNumberResponse"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.isAddress] Checks if the given string is an address.<br />
+An address (HEX string):<br />
+<textarea id="hexAddress" rows="10" cols="80">0x8888f1f195afa192cfee860698584c030f4c9db1</textarea><br />
+<button onclick="isAddress()">Check</button>
+<br /><br />
+<div id="isAddressResponse"></div>
+<hr />
+
+<!-- ================================================= -->
+[web3.eth.getCode] Get the code at the specified contract address<br />
+Contract Address (rinkeby example):
+<input type="text" id="addressCode" size="100" value="0x31a6e88ebf249b4561ee864408df9577fe25905b">
+<button onclick="showCodeAtAdddress()">Get</button>
+<br /><br />
+To find the contract address deployed from an address, goto <a href="https://rinkeby.etherscan.io" target="_blank">https://rinkeby.etherscan.io</a> enter the address and search for the transaction which created the contract.<br />
+In the transaction details you will find the contract address.
+<br /><br />
+<div id="code"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.eth.getBlock] Get the block information at the specified block hash or block number<br />
+Block hash or block number (rinkeby example):
+<input type="text" id="blockHashOrNumber" size="100" value="534254">
+<button onclick="showBlockInfo()">Get</button>
+<br /><br />
+<div id="blockinfo"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.eth.getBlockTransactionCount] Get number of transaction at the specified block hash or block number<br />
+Block hash or block number (rinkeby example):
+<input type="text" id="blockHashOrNumber2" size="100" value="534254">
+<button onclick="showNumberOfTransactionsInBlock()">Get</button>
+<br /><br />
+<div id="numberOfTransactions"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.eth.getUncle] Get blocks uncle for given block hash or block number and uncle index position<br />
+Block hash or block number (mainnet example):
+<input type="text" id="blockHashOrNumber3" size="100" value="21456">
+<br /><br />
+Uncle index position
+<input type="text" id="uncleIndex" size="100" value="0">
+<button onclick="showBlocksUncle()">Get</button>
+<br /><br />
+<div id="blocksUncle"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.eth.getTransaction] Get transactions for given transaction hash<br />
+Transaction hash (rinkeby example):
+<input type="text" id="transactionHash" size="100" value="0x54225c1bd046c79fbd00b7dcddd214b164289790039273da661f2be70b422c67">
+<button onclick="showTransactions()">Get</button>
+<br /><br />
+<div id="transactions"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.eth.getTransactionFromBlock] Get transactions for given block hash or block number and transaction index position<br />
+Block hash or block number (rinkeby example):
+<input type="text" id="blockHashOrNumber4" size="100" value="535475">
+<br /><br />
+Transaction index position
+<input type="text" id="transactionIndex" size="100" value="3">
+<button onclick="showTransactionFromBlock()">Get</button>
+<br /><br />
+<div id="transactionsFromBlock"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.eth.getTransactionReceipt] Get transaction receipt for given transaction hash
+<br /><br />
+Use this method to get the contract address.<br />
+When a contract is created using method web3.eth.sendTransaction a transaction hash is returned.<br />
+This transaction hash can be used as input for web3.eth.getTransactionReceipt.
+<br /><br />
+Note:<br />
+If you got null instead of a receipt the transaction has not been included in a block yet. <br />
+Wait for a moment and check if a miner has included the transaction in a block and retry it.
+<br /><br />
+Transaction hash (rinkeby example):
+<input type="text" id="transactionHash2" size="100" value="0x166072666774d9df8c27d9af11b2141b5ecbb5bc62c65d9db999adda75bdf0e7">
+<button onclick="showTransactionReceipt()">Get</button>
+<br /><br />
+<div id="transactionReceipt"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.eth.getTransactionCount] Get the number of transaction send for specified address<br />
+Address (rinkeby example):
+<input type="text" id="address" size="100" value="0x8d4deed6231427af94c5db64df616e244a86fb68">
+<button onclick="showTransactionsFromAdddress()">Get</button>
+<br /><br />
+<div id="transactions2"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.eth.sendTransaction] Send a transaction (ether transfer)<br />
+From account (rinkeby example):
+<input type="text" id="fromAccount" size="100" value="0x2b417fe5d262443918358a92868c60922285eda1">
+<br /><br />
+To account:
+<input type="text" id="toAccount" size="100" value="0x27382f42a8847873ab202dfdd59a194e6cee03a4">
+<br /><br />
+Amount (Ether):
+<input type="text" id="amount" size="100" value="0.0001">
+<br /><br />
+<!--
+Gas limit (gas):
+<input type="text" id="gasLimit" size="100" value="21000">
+<br /><br />
+
+Gas price (Wei)
+<input type="text" id="gasPrice" size="100" value="20000000000">
+-->
+<button onclick="sendTransaction()">Send</button>
+<br /><br />
+<div id="transactionResponse"></div>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.eth.sendTransaction] Send a transaction (contract creation)<br />
+From account (rinkeby example):
+<input type="text" id="fromAccount2" size="100" value="0x2b417fe5d262443918358a92868c60922285eda1">
+<br /><br />
+Bytecode:<br />
+<textarea id="byteCode" rows="20" cols="80">
+  6060604052341561000f57600080fd5b5b336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055505b5b61010c806100616000396000f30060606040526000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806341c0e1b514603d575b600080fd5b3415604757600080fd5b604d604f565b005b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff16141560dd576000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16ff5b5b5600a165627a7a72305820cadc222fb5cdf67c7aa4fa651568819877bb5258488d9678c11c9c599181806b0029
+</textarea>
+<br /><br />
+<button onclick="sendContractTransaction()"> Send </button>
+<br /><br />
+<div id="transactionResponse2"></div>
+<br />
+Note: <br />
+The Bytecode value above was created as follow:
+<ul>
+  <li>
+    Greeter contract copied from: <a href="https://www.ethereum.org/greeter" target="_blank">https://www.ethereum.org/greeter</a>.
+    <br /><br />
+    <textarea rows="20" cols="80">
+    pragma solidity ^0.4.0;
+
+    contract mortal {
+      /* Define variable owner of the type address*/
+      address owner;
+
+      /* this function is executed at initialization and sets the owner of the contract */
+      function mortal() { owner = msg.sender; }
+
+      /* Function to recover the funds on the contract */
+      function kill() { if (msg.sender == owner) selfdestruct(owner); }
+    }
+
+    contract greeter is mortal {
+      /* define variable greeting of the type string */
+      string greeting;
+
+      /* this runs when the contract is executed */
+      function greeter(string _greeting) public {
+      greeting = _greeting;
+      }
+
+      /* main function */
+      function greet() constant returns (string) {
+      return greeting;
+      }
+    }
+    </textarea>
+
+    <br /><br />
+  </li>
+  <li>
+    Load this code into the Remix Solidity IDE <a href="http://remix.ethereum.org" target="_blank">http://remix.ethereum.org</a>
+    or press <a href="http://remix.ethereum.org/#gist=39436b3073ac5f90ed9d047ca547cd6c&amp;version=soljson-v0.4.13+commit.fb4cb1a.js" target="_blank">this link</a>
+    and it will be done automatically for you (Use Chrome browser).
+  </li>
+  <li>
+    Compile the code in the Remix Solidity IDE.
+  </li>
+  <li>
+    Select the Contract tab and click the link "Contract details (bytecode, interface etc.)".
+  </li>
+  <li>
+    Copy the Remix Bytecode value and paste it into the Bytecode field above.
+  </li>
+  <li>
+    I already copied the Greeter interface here below, because you will need it in the web3.eth.call example:
+    <br /><br />
+    <textarea rows="10" cols="80">[{"constant":false,"inputs":[],"name":"kill","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"greet","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"inputs":[{"name":"_greeting","type":"string"}],"payable":false,"type":"constructor"}]</textarea>
+  </li>
+
+</ul>
+<hr />
+
+<!-- ================================================= -->
+
+[web3.eth.sign] Sign data<br />
+From a specific account (rinkeby example):
+<input type="text" id="fromAccount3" size="100" value="0x2b417fe5d262443918358a92868c60922285eda1">
+<br /><br />
+Data to sign:<br />
+<textarea id="dataToSign" rows="20" cols="80">Hello World</textarea>
+<br /><br />
+<button onclick="signData()">Sign</button>
+<br /><br />
+<div id="signResponse"></div>
+<div id="rValue"></div>
+<div id="sValue"></div>
+<div id="vValue"></div>
+<div id="pubKey"></div>
+<br />
+<hr />
+
+</body>
+</html>

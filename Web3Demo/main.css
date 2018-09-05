@@ -14,19 +14,20 @@ label {
     display:block;
     margin-bottom:10px;
 }
+
+#info, #env {
+    padding:1em;
+    background-color:#fff;
+    margin: 1em 0;
+}
+
 input {
     padding:10px;
-    width: 50%;
+    width: 100%;
     margin-bottom: 1em;
 }
 button {
     margin: 2em 0;
     padding: 1em 4em;
     display:block;
-}
-
-#info {
-    padding:1em;
-    background-color:#fff;
-    margin: 1em 0;
 }

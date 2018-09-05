@@ -1,0 +1,106 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title> 转账 Demo</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script src="web3.min.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+        <h1>转账 Demo</h1>
+        <h2 id="env"> </h2>
+        <h2 id="account"> </h2>
+        <label >源账号:</label>
+        <input type="text" id="fromAccount" value="">
+        <label >* 目标账号:</label>
+        <input type="text" id="toAccount" value="">
+        <label >* 金额 (Ether):</label>
+        <input type="text" id="amount"  value="0.1">
+        <label >Gas limit (gas):</label>
+        <input type="text" id="gasLimit" value="21000">
+        <label >Gas 价格 (GWei)</label>
+        <input type="text" id="gasPrice" value="5">
+
+        <button onclick="sendTransaction()">发送</button>
+        <div id="transactionResponse"></div>
+
+    </div>
+
+</div>
+
+<script src="jquery.js"></script>
+        <script>
+            window.addEventListener('load', function() {
+                if (typeof web3 !== 'undefined') {
+                    web3 = new Web3(web3.currentProvider);
+                    if (web3.currentProvider.isMetaMask == true) {
+                        $("#env").html("MetaMask可用");
+                    } else {
+                        $("#env").html("非MetaMask环境");
+                    }
+                } else {
+                    $("#env").html("No web3? 需要安装<a href='https://metamask.io/'>MetaMask</a>!");
+                }
+            });
+
+            web3.eth.getAccounts(function (err, accounts) {
+                if (accounts.length == 0) {
+                    $("#account").html("请检查钱包是否解锁");
+                } else {
+                    $("#account").html("");
+                }
+                console.log(web3.eth.defaultAccount);
+                });
+
+
+    function sendTransaction() {
+        var fromAccount = $('#fromAccount').val();
+        var toAccount = $('#toAccount').val();
+        var amount = $('#amount').val();
+        var gas = $('#gasLimit').val();
+        var gasPrice = $('#gasPrice').val();
+
+        // Use for example 2
+        if (web3.isAddress(fromAccount) &&
+            web3.isAddress(toAccount) &&
+            amount != null && amount.length > 0 &&
+            gas != null && gas.length > 0 &&
+            gasPrice != null && gasPrice.length > 0
+        ) {
+            // Example 1: 使用Metamask 给的gas Limit 及 gas 价
+            // var message = {from: fromAccount, to:toAccount, value: web3.toWei(amount, 'ether')};
+
+            // Example 2: 自动指定以gas
+            // gasPrice =  gasPrice * 1000000000;
+            // var message = {from: fromAccount, to:toAccount, value: web3.toWei(amount, 'ether'),
+            //  gas: gas, gasPrice: gasPrice};
+
+            // Example 3: 使用默认账号
+            // web3.eth.defaultAccount = fromAccount;
+            
+            var message = {to:toAccount, value: web3.toWei(amount, 'ether')};
+
+            web3.eth.sendTransaction(message, (err, res) => {
+            var output = "";
+            if (!err) {
+                output += res;
+            } else {
+                output = "Error";
+            }
+            document.getElementById('transactionResponse').innerHTML = "Transaction response= " + output + "<br />";
+            })
+        } else {
+            console.log("input error");
+        }
+    }
+
+        </script>
+  </body>
+</html>
+
+
+0xc6f9ea59d424733e8e1902c7837ea75e20abfb49
+
+0x6dd2c04f96616840bc42c9f7197a40dc94c8f52c
