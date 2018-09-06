@@ -4,34 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>First DApp Demo</title>
 
     <link rel="stylesheet" type="text/css" href="main.css">
 
-    <script src="./node_modules/web3/dist/web3.min.js"></script>
+    <script src="web3.min.js"></script>
 
 </head>
 <body>
     <div class="container">
 
-        <h1>Info Contract</h1>
+        <h1> First DApp Demo</h1>
 
         <h2 id="info"></h2>
 
         <img id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
 
-        <label for="name" class="col-lg-2 control-label">Name</label>
+        <label for="name" class="col-lg-2 control-label">姓名：</label>
         <input id="name" type="text">
 
-        <label for="name" class="col-lg-2 control-label">Age</label>
+        <label for="name" class="col-lg-2 control-label">年龄：</label>
         <input id="age" type="text">
 
-        <button id="button">Update Info</button>
+        <button id="button">更新</button>
 
 
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="jquery.js"></script>
 
     <script>
        if (typeof web3 !== 'undefined') {
