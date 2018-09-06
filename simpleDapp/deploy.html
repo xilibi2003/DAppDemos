@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>First DApp Demo</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+
+        <h1> First DApp Demo</h1>
+
+        <h2 id="info"></h2>
+        <h4 id="log"></h2>
+
+        <label for="name" class="col-lg-2 control-label">姓名：</label>
+        <input id="name" type="text">
+
+        <label for="name" class="col-lg-2 control-label">年龄：</label>
+        <input id="age" type="text">
+
+        <button id="button">更新</button>
+
+
+    </div>
+
+    <script src="jquery.js"></script>
+
+    <script>
+
+        console.log(web3);
+
+       if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
+        } else {
+            // set the provider you want from Web3.providers
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+        }
+
+        web3.eth.defaultAccount = web3.eth.accounts[0];
+
+        var infoContract = web3.eth.contract([{"constant":true,"inputs":[],"name":"getInfo","outputs":[{"name":"","type":"string"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_fName","type":"string"},{"name":"_age","type":"uint256"}],"name":"setInfo","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]);
+
+        var info = infoContract.at('0x8cdaf0cd259887258bc13a92c0a6da92698644c0');
+        if (typeof info !== 'undefined' ) {
+            callContractFun(info);
+        } else {
+            var infocontract = infoContract.new(
+        {
+            from: web3.eth.accounts[0], 
+            data: '0x608060405234801561001057600080fd5b506102ce806100206000396000f30060806040526004361061004b5763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416635a9b0b8981146100505780638262963b146100e4575b600080fd5b34801561005c57600080fd5b50610065610141565b6040518080602001838152602001828103825284818151815260200191508051906020019080838360005b838110156100a8578181015183820152602001610090565b50505050905090810190601f1680156100d55780820380516001836020036101000a031916815260200191505b50935050505060405180910390f35b3480156100f057600080fd5b506040805160206004803580820135601f810184900484028501840190955284845261013f94369492936024939284019190819084018382808284375094975050933594506101ed9350505050565b005b6060600080600154818054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156101de5780601f106101b3576101008083540402835291602001916101de565b820191906000526020600020905b8154815290600101906020018083116101c157829003601f168201915b50505050509150915091509091565b8151610200906000906020850190610207565b5060015550565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061024857805160ff1916838001178555610275565b82800160010185558215610275579182015b8281111561027557825182559160200191906001019061025a565b50610281929150610285565b5090565b61029f91905b80821115610281576000815560010161028b565b905600a165627a7a72305820d49f724ed1fe9cdb33d85f2f25c349e65725828e172522121288901c14aa7da40029', 
+            gas: '4700000'
+        }, function (e, contract){
+            console.log(e, contract);
+            if (typeof contract.address !== 'undefined') {
+                $("#log").html('Contract mined! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
+                callContractFun(contract);
+            }
+        })
+        }
+        
+        function callContractFun(contract) {
+            contract.getInfo(function(error, result){
+                    if(!error)
+                        {
+                            $("#info").html(result[0]+' ('+result[1]+' years old)');
+                            console.log(result);
+                        }
+                    else
+                        console.error(error);
+                });
+
+                $("#button").click(function() {
+                    contract.setInfo($("#name").val(), $("#age").val(), {gas: 500000 },  function(error, result){
+                    });
+                });
+        }
+
+    </script>
+
+</body>
+</html>
