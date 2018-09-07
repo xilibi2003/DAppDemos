@@ -99,7 +99,7 @@
 	}
 ]);
 
-        var info = infoContract.at('0x345ca3e014aaf5dca488057592ee47305d9b3e10');
+        var info = infoContract.at('0xcb02d3f1bf9fbe957f1969192f70787b0bffc3c3');
 
         var instructorEvent = info.Instructor();
        instructorEvent.watch(function(error, result){
@@ -115,7 +115,8 @@
 
         $("#button").click(function() {
             $("#loader").show();
-            info.setInfo($("#name").val(), $("#age").val());
+            info.setInfo($("#name").val(), $("#age").val(), function(error, result){
+        	});
         });
 
     </script>
