@@ -1,0 +1,21 @@
+{
+  "name": "firsttruffledemo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "lite-server"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "truffle-contract": "^3.0.6"
+  },
+  "devDependencies": {
+    "lite-server": "^2.4.0"
+  }
+}
