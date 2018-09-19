@@ -1,6 +1,6 @@
 App = {
   web3Provider: null,
-  contracts: {},
+  Voting: null,
 
   init: function() {
     return App.initWeb3();
@@ -18,17 +18,13 @@ App = {
   },
 
   initContract: function() {
-    $.getJSON('Voting.json', function(data) {
-      App.contracts.Voting = TruffleContract(data);
-      App.contracts.Voting.setProvider(App.web3Provider);
 
-      return App.initData();
-   });
+    $.getJSON('Voting.json', function (data) {
+        App.Voting = TruffleContract(data);
+        App.Voting.setProvider(App.web3Provider);
 
-   return App.bindEvents();
-  },
-
-  bindEvents: function() {
+        return App.initData();
+    });
     $("#vote").on("click", App.voteForCandidate);
   },
 
@@ -38,7 +34,7 @@ App = {
     for (var i = 0; i < candidateNames.length; i++) {
       let name = candidateNames[i];
 
-      App.contracts.Voting.deployed().then(function(contractInstance) {
+      App.Voting.deployed().then(function(contractInstance) {
           return contractInstance.totalVotesFor(name);
         }).then(function(v) {
           console.log(v);
@@ -51,25 +47,23 @@ App = {
 
   voteForCandidate: function() {
     let candidateName = $("#candidate").val();
-    try {
-      $("#msg").html("Vote has been submitted. The vote count will increment as soon as the vote is recorded on the blockchain. Please wait.")
-      $("#candidate").val("");
+    let ethvalue = $("#value").val();   // ether
+    let weivalue = web3.toWei(ethvalue, 'ether');
 
-      App.contracts.Voting.deployed().then(function(contractInstance) {
-        contractInstance.voteForCandidate(candidateName, {gas: 140000, from: web3.eth.accounts[0]}).then(function() {
-          let div_id = candidates[candidateName];
-          return contractInstance.totalVotesFor.call(candidateName).then(function(v) {
-            $("#" + div_id).html(v.toString());
-            $("#msg").html("");
-          });
-        });
+    App.Voting.deployed().then(function(contractInstance) {
+        return contractInstance.voteForCandidate(candidateName, {value: weivalue});
+      }).then(function(v) {
+        App.initData();
+      }).catch(function(err) {
+        console.log(err.message);
       });
-    } catch (err) {
-      console.log(err);
-    }
+
   }
 
+
 };
+
+
 
 $(function() {
   $(window).load(function() {

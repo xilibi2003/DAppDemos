@@ -1,11 +1,12 @@
 pragma solidity ^0.4.22;
 
-contract Voting {
-  mapping (bytes32 => uint8) public votesReceived;
+import "./SafeMath.sol";
 
-  /* Solidity doesn't let you pass in an array of strings in the constructor (yet).
-  We will use an array of bytes32 instead to store the list of candidates
-  */
+contract Voting {
+  using SafeMath for uint;
+
+  mapping (bytes32 => uint ) public votesReceived;
+  mapping (address => bool) private addrRecoded;
 
   bytes32[] public candidateList;
 
@@ -13,23 +14,29 @@ contract Voting {
     candidateList = candidateNames;
   }
 
-
-  function totalVotesFor(bytes32 candidate) view public returns (uint8) {
-    require(validCandidate(candidate));
-    return votesReceived[candidate];
+  function totalVotesFor(bytes32 candidate) view public returns (uint) {
+      require(validCandidate(candidate));
+      return votesReceived[candidate];
   }
 
-  function voteForCandidate(bytes32 candidate) public {
+  function voteForCandidate(bytes32 candidate) payable public {
     require(validCandidate(candidate));
-    votesReceived[candidate] += 1;
+    require(!addrRecoded[msg.sender]);
+    addrRecoded[msg.sender] = true;
+
+    uint m = msg.value / 0.1 ether;
+
+    votesReceived[candidate] = votesReceived[candidate].add(m);
   }
 
-  function validCandidate(bytes32 candidate) view public returns (bool) {
-    for(uint i = 0; i < candidateList.length; i++) {
+  function validCandidate(bytes32 candidate) view public returns (bool){
+    for (uint i = 0 ; i< candidateList.length; i++) {
       if (candidateList[i] == candidate) {
         return true;
       }
     }
     return false;
   }
+
+
 }
