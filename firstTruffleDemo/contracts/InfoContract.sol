@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity  >0.4.23 <0.7.0;
 
 contract InfoContract {
     string name;
@@ -6,13 +6,13 @@ contract InfoContract {
 
     event Instructor(string name, uint age);
 
-    function setInfo(string _name, uint _age) public {
+    function setInfo(string memory _name, uint _age) public {
         name = _name;
         age = _age;
         emit Instructor(name, age);
     }
 
-    function getInfo() public view returns(string, uint) {
+    function getInfo() public view returns(string memory, uint) {
         return (name, age);
     }
 }

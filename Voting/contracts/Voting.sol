@@ -1,4 +1,4 @@
-pragma solidity ^0.4.22;
+pragma solidity >0.4.23 <0.7.0;
 
 import "./SafeMath.sol";
 
@@ -10,7 +10,7 @@ contract Voting {
 
   bytes32[] public candidateList;
 
-  constructor(bytes32[] candidateNames) public {
+  constructor(bytes32[] memory candidateNames) public {
     candidateList = candidateNames;
   }
 
