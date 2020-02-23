@@ -7,7 +7,7 @@
     <title>First DApp Demo</title>
 
     <link rel="stylesheet" type="text/css" href="main.css">
-    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+    <script src="web3_0.20.min.js"></script>
 
 </head>
 <body>
@@ -32,16 +32,36 @@
 
     <script>
 
-        console.log(web3);
+        console.log(web3.version);
 
-       if (typeof web3 !== 'undefined') {
+
+        if (window.ethereum) {
+            // 请求用户授权
+            window.ethereum.enable(function(){
+
+                console.log("abc")
+
+                web3.eth.getAccounts().then(r => {
+                    console.log("abc")
+                });
+
+                web3.eth.getAccounts((error, accounts) => {
+                    web3.eth.defaultAccount = accounts[0];
+                    console.log("cdf")
+                    console.log(accounts)
+                })
+            })
+
+        } else  if (typeof web3 !== 'undefined') {
             web3 = new Web3(web3.currentProvider);
+            web3.eth.defaultAccount = web3.eth.accounts[0];
+            console.log(web3.eth.defaultAccount);
         } else {
             // set the provider you want from Web3.providers
             web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
         }
 
-        web3.eth.defaultAccount = web3.eth.accounts[0];
+
 
         var infoContract = web3.eth.contract([{"constant":true,"inputs":[],"name":"getInfo","outputs":[{"name":"","type":"string"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_fName","type":"string"},{"name":"_age","type":"uint256"}],"name":"setInfo","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]);
 
