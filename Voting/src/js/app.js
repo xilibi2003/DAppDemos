@@ -1,6 +1,8 @@
 App = {
   web3Provider: null,
   Voting: null,
+  web3: null,
+  accounts: null,
 
   init: function() {
     return App.initWeb3();
@@ -8,19 +10,18 @@ App = {
 
   initWeb3: async function() {
     if (window.ethereum) {
-      this.provider = window.ethereum;
+      App.web3Provider = window.ethereum;
       try {
-        await window.ethereum.enable();
+        App.accounts = await ethereum.send('eth_requestAccounts')
+        console.log("accounts: " + App.accounts.result[0]);
+        App.account = App.accounts.result[0];
       } catch (error) {
         console.error("User denied account access");
       }
-    }  else if (typeof web3 !== 'undefined') {
-      App.web3Provider = web3.currentProvider;
-      web3 = new Web3(web3.currentProvider);
     } else {
       App.web3Provider = new Web3.providers.HttpProvider("http://127.0.0.1:9545")
-      web3 = new Web3(App.web3Provider);
     }
+    App.web3 = new Web3(App.web3Provider);
     return App.initContract();
   },
 
@@ -55,14 +56,14 @@ App = {
   voteForCandidate: function() {
     let candidateName = $("#candidate").val();
     let ethvalue = $("#value").val();   // ether
-    let weivalue = web3.toWei(ethvalue, 'ether');
+    let weivalue = App.web3.toWei(ethvalue, 'ether');
 
     App.Voting.deployed().then(function(contractInstance) {
-        return contractInstance.voteForCandidate(candidateName, {value: weivalue});
+        return contractInstance.voteForCandidate(candidateName, {value: weivalue, from: App.account });
       }).then(function(v) {
         App.initData();
       }).catch(function(err) {
-        console.log(err.message);
+        console.log("vate:" + err.message);
       });
 
   }
