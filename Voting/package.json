@@ -9,7 +9,9 @@
   "dependencies": {
     "lite-server": "^2.4.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "lite-server": "^2.6.1"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "lite-server"

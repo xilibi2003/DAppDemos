@@ -6,8 +6,15 @@ App = {
     return App.initWeb3();
   },
 
-  initWeb3: function() {
-    if (typeof web3 !== 'undefined') {
+  initWeb3: async function() {
+    if (window.ethereum) {
+      this.provider = window.ethereum;
+      try {
+        await window.ethereum.enable();
+      } catch (error) {
+        console.error("User denied account access");
+      }
+    }  else if (typeof web3 !== 'undefined') {
       App.web3Provider = web3.currentProvider;
       web3 = new Web3(web3.currentProvider);
     } else {
