@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" type="text/css" href="main.css">
 
-    <script src="web3_0.20.min.js"></script>
+    <script src="web3_1.2.6.min.js"></script>
 
 </head>
 <body>
@@ -34,17 +34,31 @@
     <script src="jquery.js"></script>
 
     <script>
-       if (typeof web3 !== 'undefined') {
-            web3 = new Web3(web3.currentProvider);
-        } else {
-            // set the provider you want from Web3.providers
-            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+        function initWeb3() {
+            var web3;
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+            // 请求用户授权
+                window.ethereum.enable();
+            } else if (typeof web3 !== 'undefined') {
+                web3 = new Web3(web3.currentProvider);
+                web3.eth.defaultAccount = web3.eth.accounts[0];
+                console.log(web3.eth.defaultAccount);
+            } else {
+                // set the provider you want from Web3.providers
+                web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
+            }
+            return web3;
         }
 
-        web3.eth.defaultAccount = web3.eth.accounts[0];
+        var web3 = initWeb3();
 
-        var infoContract = web3.eth.contract([
-	{
+        web3.eth.getAccounts((error, accounts) => {
+            web3.eth.defaultAccount = accounts[0];
+            console.log(accounts)
+        })
+
+				var info = new web3.eth.Contract([{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -97,16 +111,15 @@
 		"stateMutability": "view",
 		"type": "function"
 	}
-]);
+], '0xcb02d3f1bf9fbe957f1969192f70787b0bffc3c3');
 
-        var info = infoContract.at('0xcb02d3f1bf9fbe957f1969192f70787b0bffc3c3');
+        var instructorEvent = info.events.Instructor(function(error, result){
+						console.log(result);
 
-        var instructorEvent = info.Instructor();
-       instructorEvent.watch(function(error, result){
             if (!error)
                 {
                     $("#loader").hide();
-                    $("#info").html(result.args.name + ' (' + result.args.age + ' years old)');
+                    $("#info").html(result.returnValues.name + ' (' + result.returnValues.age + ' years old)');
                 } else {
                     $("#loader").hide();
                     console.log(error);
@@ -115,8 +128,12 @@
 
         $("#button").click(function() {
             $("#loader").show();
-            info.setInfo($("#name").val(), $("#age").val(), function(error, result){
-        	});
+            info.methods.setInfo($("#name").val(), $("#age").val())
+            .send({from: web3.eth.defaultAccount},
+             function(error, transactionHash) {
+                 console.log(error)
+            
+            });
         });
 
     </script>
